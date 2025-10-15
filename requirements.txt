@@ -4,3 +4,5 @@ pdfplumber
 tabula-py
 fuzzywuzzy
 python-Levenshtein
+streamlit
+
