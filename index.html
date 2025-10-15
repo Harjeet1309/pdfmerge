@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Data Joiner</title>
+</head>
+<body>
+    <h1>PDF Data Joiner</h1>
+    <input type="file" id="pdf1" accept="application/pdf">
+    <input type="file" id="pdf2" accept="application/pdf">
+    <button onclick="uploadPDFs()">Compare PDFs</button>
+
+    <h2>Result:</h2>
+    <pre id="result"></pre>
+
+    <script>
+        const backendURL = "https://your-backend.onrender.com/compare"; // replace with your deployed backend
+
+        async function uploadPDFs() {
+            const pdf1 = document.getElementById("pdf1").files[0];
+            const pdf2 = document.getElementById("pdf2").files[0];
+            if (!pdf1 || !pdf2) {
+                alert("Please upload both PDFs!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("pdf1", pdf1);
+            formData.append("pdf2", pdf2);
+
+            const resultEl = document.getElementById("result");
+            resultEl.textContent = "Processing...";
+
+            const response = await fetch(backendURL, {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.headers.get("content-type").includes("text/csv")) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "common_data.csv";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                resultEl.textContent = "CSV downloaded!";
+            } else {
+                const data = await response.json();
+                if (data.common_text) {
+                    resultEl.textContent = data.common_text.join("\n");
+                } else {
+                    resultEl.textContent = data.error;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

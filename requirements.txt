@@ -1,0 +1,6 @@
+Flask
+pandas
+pdfplumber
+tabula-py
+fuzzywuzzy
+python-Levenshtein
